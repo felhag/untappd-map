@@ -1,4 +1,5 @@
 const jsdom = require("jsdom");
+const fs = require('fs');
 
 function extractVenue(item) {
     const venue = item.querySelector('[href^="/v/"]');
@@ -46,7 +47,39 @@ async function getAll() {
         });
 }
 
+async function getAddress(venue) {
+    return await fetch(`https://untappd.com/v/v/${venue}`, {
+        "headers": {
+            "x-requested-with": "XMLHttpRequest",
+                "cookie": < get cookie from browser >
+        }
+    })
+        .then(r => r.text())
+        .then(html => {
+            const dom = new jsdom.JSDOM(html);
+            const doc = dom.window.document;
+            const name = doc.querySelector('.venue-name h1').textContent;
+            const href = doc.querySelector('.address a').href;
+            const coordinates = URL.parse(href).searchParams.get('near');
+            return {venue, name, coordinates};
+        });
+}
+
 getAll().then(venues => {
-    console.log(venues);
-    console.log(JSON.stringify(venues));
+    fs.readFile('venues.json', 'utf8', async (err, json) => {
+        if (err) {
+            console.log(err);
+        } else {
+            const deduped = [...new Set(venues)];
+            const data = JSON.parse(json);
+            const todo = deduped.filter(d => !data[d]);
+            for (let venue of todo) {
+                const result = await getAddress(venue);
+                data[result.venue] = result;
+                fs.writeFile('venues.json', JSON.stringify(data), 'utf8', () => {
+                    console.log('updated');
+                });
+            }
+        }
+    });
 });
