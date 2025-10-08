@@ -60,7 +60,8 @@ async function getAddress(venue) {
             const doc = dom.window.document;
             const name = doc.querySelector('.venue-name h1').textContent;
             const href = doc.querySelector('.address a').href;
-            const coordinates = URL.parse(href).searchParams.get('near');
+            const searchParams = URL.parse(href).searchParams;
+            const coordinates = searchParams.get('near') || searchParams.get('q');
             return {venue, name, coordinates};
         });
 }
