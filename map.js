@@ -1,4 +1,4 @@
-fetch('/venues.json')
+fetch('venues.json')
     .then(venues => venues.json())
     .then(venues => {
         const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png');
