@@ -10,7 +10,7 @@ fetch('/venues.json')
         });
 
         const markers = L.markerClusterGroup();
-        for (let venue of Object.values(venues)) {
+        for (let venue of Object.values(venues.venues)) {
             const split = venue.coordinates.split(',');
             const title = venue.name;
             const marker = L.marker(new L.LatLng(split[0], split[1]), {title});
