@@ -2,6 +2,9 @@ const jsdom = require("jsdom");
 const fs = require('fs');
 
 const COOKIE = "< get cookie from browser >";
+const username = 'TonnyTorpedo'
+const filePath = 'venues.json';
+
 
 function headers() {
     return {
@@ -24,7 +27,7 @@ function parseCheckin(item) {
 }
 
 async function getRecursive(id, checkins) {
-    return await fetch(`https://untappd.com/profile/more_feed/TonnyTorpedo/${id}?v2=true`, {
+    return await fetch(`https://untappd.com/profile/more_feed/${username}/${id}?v2=true`, {
         "headers": headers(),
         "body": null,
         "method": "GET"
@@ -47,7 +50,7 @@ async function getRecursive(id, checkins) {
 }
 
 async function getItems() {
-    return await fetch('https://untappd.com/user/TonnyTorpedo')
+    return await fetch('https://untappd.com/user/' + username)
         .then(r => r.text())
         .then(html => {
             const dom = new jsdom.JSDOM(html);
@@ -71,8 +74,9 @@ async function getAddress(venue) {
 }
 
 async function run() {
-    const json = fs.readFileSync('venues.json', 'utf8');
-    const data = JSON.parse(json || '{}');
+    console.log(`Updating ${filePath} for ${username}`);
+    const json = fs.existsSync(filePath) ? fs.readFileSync('venues.json', 'utf8') : '{}';
+    const data = JSON.parse(json);
     if (!data.checkins) {
         const items = await getItems();
         const last = items[items.length - 1];
