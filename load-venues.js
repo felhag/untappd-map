@@ -40,7 +40,7 @@ async function getRecursive(id, checkins) {
             const allVenues = checkins.concat(items);
             const next = items[24]?.id;
             if (next) {
-                console.log(`Loading checkin from ${next}: ${allVenues.length} checkins loaded `)
+                console.log(`Loading checkin from ${next}: ${allVenues.length} checkins loaded`);
                 return getRecursive(next, allVenues);
             } else {
                 console.log('done!');
@@ -85,6 +85,7 @@ async function run() {
         const last = data.checkins[0];
         const items = await getItems();
         const idx = items.findIndex(item => item.id === last.id);
+        console.log(`Found ${items.length} new checkins`);
         if (idx === 0) {
             // no action needed
         } else if (idx > 0) {
